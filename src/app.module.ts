@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { validationSchema } from './config/ validation';
+import { DatabaseModule } from './database/database.module';
+import { PackageModule } from './api/packages/package.module';
+import { AuthModule } from './auth/admin/auth.module';
 
 @Module({
   imports: [
@@ -11,7 +14,10 @@ import { validationSchema } from './config/ validation';
       isGlobal: true,
       load: [configuration],
       validationSchema
-    })
+    }),
+    DatabaseModule,
+    PackageModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
