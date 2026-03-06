@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types, Document } from 'mongoose';
+import { ImageItem } from 'src/common/class/imageclass';
 
 export type ItineraryDocument = Itinerary & Document;
 
@@ -16,8 +17,8 @@ class DayPlan {
   @Prop([String])
   activities: string[];
 
-  @Prop([String])
-  images: string[];
+  @Prop({ type: [ImageItem], default: [] })
+  images: ImageItem[];
 
   @Prop({ type: [String], default: [] })
   optionalActivities: string[];

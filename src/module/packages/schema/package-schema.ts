@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { string } from 'joi';
 import { Document, Types } from 'mongoose';
+import { ImageItem } from 'src/common/class/imageclass';
+import { PackageCategory } from 'src/enum/query.enum';
 
 export type PackageDocument = Package & Document;
 
@@ -25,8 +28,8 @@ export class Package {
   @Prop({ required: true })
   pricePerPerson: number;
 
-  @Prop()
-  coverImage: string;
+  @Prop({ type: ImageItem })
+  coverImage: ImageItem;
 
   @Prop({ required: true, unique: true, index: true })
   slug: string;
@@ -34,8 +37,19 @@ export class Package {
   @Prop({ default: true })
   isActive: boolean;
 
-  @Prop({ type: String, enum: ['Family', 'Couple', 'Adventure', 'Luxury', 'Women-only', 'Solo'], default: 'Family' })
-  category: string;
+  @Prop({
+    type: String,
+    enum: [
+      PackageCategory.FAMILY,
+      PackageCategory.COUPLE,
+      PackageCategory.ADVENTURE,
+      PackageCategory.LUXURY,
+      PackageCategory.WOMEN_ONLY,
+      PackageCategory.SOLO,
+    ],
+    default: [PackageCategory.FAMILY],
+  })
+  category: PackageCategory[];
 
   @Prop({ type: String })
   description: string;
@@ -49,8 +63,8 @@ export class Package {
   @Prop({ type: Number, default: 0 })
   discountPercent: number;
 
-  @Prop({ type: [Date] })
-  availableDates: Date[];
+  @Prop({ type: [String] })
+  availableDates: string[];
 
   @Prop({ type: Number, default: 0 })
   rating: number;

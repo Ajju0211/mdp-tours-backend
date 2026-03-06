@@ -1,5 +1,10 @@
 // auth/guards/jwt-auth.guard.ts
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -9,10 +14,12 @@ export class JwtAuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
-    
+
     // 1. Read JWT from header or cookie
-    const token = request.cookies['access_token'] || request.headers['authorization']?.split(' ')[1];
-    
+    const token =
+      request.cookies['access_token'] ||
+      request.headers['authorization']?.split(' ')[1];
+
     if (!token) throw new UnauthorizedException('No token provided');
 
     try {
@@ -20,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
       const payload = this.jwtService.verify(token);
 
       // 3. Attach user info to request
-      request.user = payload;
+      (request as any).user = payload;
 
       return true; // request can proceed
     } catch {

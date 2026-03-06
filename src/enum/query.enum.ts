@@ -5,3 +5,12 @@ export enum QueryStatus {
   CLOSED = 'CLOSED',
   SPAM = 'SPAM',
 }
+
+export enum PackageCategory {
+  FAMILY = 'Family',
+  COUPLE = 'Couple',
+  ADVENTURE = 'Adventure',
+  LUXURY = 'Luxury',
+  WOMEN_ONLY = 'Women-only',
+  SOLO = 'Solo',
+}
