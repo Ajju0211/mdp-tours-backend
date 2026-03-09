@@ -37,8 +37,11 @@ export class Package {
   @Prop({ default: true })
   isActive: boolean;
 
+  @Prop({ default: false })
+  isPublic: boolean;
+
   @Prop({
-    type: String,
+    type: [String],
     enum: [
       PackageCategory.FAMILY,
       PackageCategory.COUPLE,

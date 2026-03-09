@@ -50,6 +50,7 @@ export class UploadService {
             Body: file.buffer,
             ContentType: 'image/avif',
             CacheControl: 'public, max-age=31536000',
+
           }),
         );
 

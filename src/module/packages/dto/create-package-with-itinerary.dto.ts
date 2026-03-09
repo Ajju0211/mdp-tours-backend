@@ -1,4 +1,3 @@
-// create-package-with-itinerary.dto.ts
 import {
   IsArray,
   IsBoolean,
@@ -6,17 +5,31 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Min,
+  Max,
   ValidateNested,
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ImageItemDto } from './image-item.dto';
 import { PackageCategory } from 'src/enum/query.enum';
+import { ImageItemDto } from './image-item.dto';
 
+// 2. Nested DTO for Day Plans (to match dayPlanSchema)
 class DayPlanDto {
-  @IsNumber() dayNumber: number;
-  @IsString() title: string;
-  @IsOptional() @IsString() description?: string;
-  @IsArray() @IsString({ each: true }) activities: string[];
+  @IsNumber()
+  @Min(1)
+  dayNumber: number;
+
+  @IsString()
+  title: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  activities: string[];
 
   @IsOptional()
   @IsArray()
@@ -24,40 +37,88 @@ class DayPlanDto {
   @Type(() => ImageItemDto)
   images?: ImageItemDto[];
 
-  @IsArray()
-  @IsEnum(PackageCategory, { each: true })
-  categories: PackageCategory[];
-
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   optionalActivities?: string[];
 
-  @IsOptional() @IsString() transport?: string;
-  @IsOptional() @IsArray() @IsString({ each: true }) videos?: string[];
-  @IsOptional() @IsString() notes?: string;
   @IsOptional()
   meals?: { breakfast?: string; lunch?: string; dinner?: string };
+
   @IsOptional()
   location?: { lat?: number; lng?: number };
+
+  @IsOptional()
+  @IsString()
+  transport?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }
 
+// 3. Main Package DTO
 export class CreatePackageWithItineraryDto {
-  @IsString() title: string;
-  @IsString() destinationName: string;
-  @IsNumber() nights: number;
-  @IsNumber() days: number;
-  @IsNumber() pricePerPerson: number;
-  @IsNumber() discountPercent: number;
-  @ValidateNested() @Type(() => ImageItemDto) coverImage: ImageItemDto;
-  @IsBoolean() isActive: boolean;
-  @IsBoolean() isPublic: boolean;
-  @IsArray() @IsString({ each: true }) inclusions: string[];
-  @IsArray() @IsString({ each: true }) exclusions: string[];
-  @IsArray() @IsString({ each: true }) availableDates: string[]; // ISO strings
-  @IsString() description: string;
-  @IsString() metaTitle: string;
-  @IsString() metaDescription: string;
+  @IsString()
+  title: string;
 
-  @IsArray() @Type(() => DayPlanDto) itineraryDays: DayPlanDto[];
+  @IsString()
+  destinationName: string;
+
+  @ValidateNested()
+  @Type(() => ImageItemDto)
+  coverImage: ImageItemDto;
+
+  @IsNumber()
+  @Min(0)
+  nights: number;
+
+  @IsNumber()
+  @Min(1)
+  days: number;
+
+  @IsNumber()
+  @Min(0)
+  pricePerPerson: number;
+
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  discountPercent: number;
+
+  @IsArray()
+  @IsEnum(PackageCategory, { each: true })
+  category: PackageCategory[];
+
+  @IsBoolean()
+  isActive: boolean;
+
+  @IsBoolean()
+  isPublic: boolean;
+
+  @IsArray()
+  @IsString({ each: true })
+  inclusions: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  exclusions: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  availableDates: string[]; // ISO strings
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  metaTitle: string;
+
+  @IsString()
+  metaDescription: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DayPlanDto)
+  itineraryDays: DayPlanDto[];
 }

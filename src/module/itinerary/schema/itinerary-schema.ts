@@ -64,6 +64,9 @@ export class Itinerary {
   })
   packageId: Types.ObjectId;
 
+  @Prop({ required: true })
+  slug: string;
+
   @Prop({ type: [DayPlan], default: [] })
   days: DayPlan[];
 }

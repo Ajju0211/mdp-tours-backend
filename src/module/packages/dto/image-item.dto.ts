@@ -1,5 +1,5 @@
 // image-item.dto.ts
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class ImageItemDto {
   @IsString()
@@ -10,6 +10,6 @@ export class ImageItemDto {
   key?: string;
 
   @IsOptional()
-  @IsString()
-  alt?: string;
+  @IsNumber()
+  size?: number;
 }
