@@ -11,6 +11,7 @@ import { Itinerary, ItineraryDocument } from '../itinerary/schema/itinerary-sche
 import { CreatePackageWithItineraryDto } from './dto/create-package-with-itinerary.dto';
 import { nanoid } from 'nanoid';
 import { FindAllPackagesDto } from './interface/package.response';
+import { GetPackagesFilterDto } from './dto/get-packages-filter.dto';
 
 @Injectable()
 export class PackageService {
@@ -181,5 +182,91 @@ export class PackageService {
     } finally {
       session.endSession();
     }
+  }
+
+
+  async getFilteredPackages(filterDto: GetPackagesFilterDto) {
+    const {
+      q,
+      minPrice,
+      maxPrice,
+      category,
+      type,
+      groupSize,
+      limit = 10,
+      cursor
+    } = filterDto;
+
+    // Query params arrive as strings, ensure limit is a number
+    const numericLimit = Number(limit);
+
+    const pipeline: any[] = [];
+
+    // 1️⃣ Atlas Search
+    if (q) {
+      pipeline.push({
+        $search: {
+          index: "default",
+          text: {
+            query: q,
+            path: ["title", "destinationName", "description"],
+            fuzzy: { maxEdits: 2 }
+          }
+        }
+      });
+    }
+
+    // 2️⃣ Filters
+    const match: any = {
+      isActive: true,
+      isPublic: true
+    };
+
+    if (minPrice || maxPrice) {
+      match.pricePerPerson = {};
+      if (minPrice) match.pricePerPerson.$gte = Number(minPrice);
+      if (maxPrice) match.pricePerPerson.$lte = Number(maxPrice);
+    }
+
+    // category is an array field in schema, use $in to match
+    if (category) match.category = { $in: [category] };
+    if (type) match.type = { $in: [type] };
+    if (groupSize) match.groupSize = groupSize;
+
+    pipeline.push({ $match: match });
+
+    // 3️⃣ Cursor condition for infinite scroll
+    if (cursor) {
+      pipeline.push({
+        $match: {
+          _id: { $lt: new Types.ObjectId(cursor) }
+        }
+      });
+    }
+
+    // 4️⃣ Sort
+    pipeline.push({
+      $sort: { _id: -1 }
+    });
+
+    // 5️⃣ Fetch one extra to determine hasMore
+    pipeline.push({ $limit: numericLimit + 1 });
+
+    const packages = await this.packageModel.aggregate(pipeline);
+
+    const hasMore = packages.length > numericLimit;
+    const results = hasMore ? packages.slice(0, numericLimit) : packages;
+
+    // Next cursor
+    const nextCursor =
+      results.length > 0
+        ? results[results.length - 1]._id
+        : null;
+
+    return {
+      data: results,
+      nextCursor,
+      hasMore,
+    };
   }
 }

@@ -11,7 +11,7 @@ import {
   IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PackageCategory } from 'src/enum/query.enum';
+import { DestinationType, PackageCategory } from 'src/enum/query.enum';
 import { ImageItemDto } from './image-item.dto';
 
 // 2. Nested DTO for Day Plans (to match dayPlanSchema)
@@ -89,6 +89,13 @@ export class CreatePackageWithItineraryDto {
   @IsArray()
   @IsEnum(PackageCategory, { each: true })
   category: PackageCategory[];
+
+  @IsArray()
+  @IsEnum(DestinationType, { each: true })
+  type: DestinationType[];
+
+  @IsString()
+  groupSize: string
 
   @IsBoolean()
   isActive: boolean;

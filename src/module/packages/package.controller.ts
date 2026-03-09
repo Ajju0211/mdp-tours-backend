@@ -11,10 +11,11 @@ import {
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { CreatePackageWithItineraryDto } from './dto/create-package-with-itinerary.dto';
+import { GetPackagesFilterDto } from './dto/get-packages-filter.dto';
 
 @Controller('packages')
 export class PackageController {
-  constructor(private readonly packageService: PackageService) {}
+  constructor(private readonly packageService: PackageService) { }
 
   // @Post()
   // create(@Body() dto: CreatePackageDto) {
@@ -39,7 +40,7 @@ export class PackageController {
     return this.packageService.findById(id);
   }
 
-  @Get()
+  @Get('admin')
   async getAllPackages(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
@@ -54,6 +55,11 @@ export class PackageController {
       isActive: isActive !== undefined ? isActive === 'true' : undefined,
       isPublic: isPublic !== undefined ? isPublic === 'true' : undefined,
     });
+  }
+
+  @Get()
+  async getFilteredPackages(@Query() filterDto: GetPackagesFilterDto) {
+    return this.packageService.getFilteredPackages(filterDto);
   }
 
   @Delete(':id')

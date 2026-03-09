@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { string } from 'joi';
 import { Document, Types } from 'mongoose';
 import { ImageItem } from 'src/common/class/imageclass';
-import { PackageCategory } from 'src/enum/query.enum';
+import { DestinationType, PackageCategory } from 'src/enum/query.enum';
 
 export type PackageDocument = Package & Document;
 
@@ -34,6 +34,9 @@ export class Package {
   @Prop({ required: true, unique: true, index: true })
   slug: string;
 
+  @Prop({ index: true })
+  groupSize: string;
+
   @Prop({ default: true })
   isActive: boolean;
 
@@ -53,6 +56,20 @@ export class Package {
     default: [PackageCategory.FAMILY],
   })
   category: PackageCategory[];
+
+  @Prop({
+    type: [String],
+    enum: [
+      DestinationType.ADVENTURE,
+      DestinationType.BEACH,
+      DestinationType.HERITAGE,
+      DestinationType.HILL_STATION,
+      DestinationType.NATURE,
+      DestinationType.SPIRITUAL,
+    ],
+    default: [DestinationType.ADVENTURE],
+  })
+  type: PackageCategory[];
 
   @Prop({ type: String })
   description: string;
