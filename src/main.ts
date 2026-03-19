@@ -16,7 +16,7 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:3001'], // allow only your frontend
+    origin: ['http://localhost:5173', 'http://localhost:3001', "https://mdptours.com", "https://www.mdptours.com"], // allow only your frontend
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // required if sending cookies
   });
