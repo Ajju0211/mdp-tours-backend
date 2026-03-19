@@ -28,8 +28,16 @@ export class GetPackagesFilterDto {
     maxPrice?: number;
 
     @IsOptional()
-    @IsString()
-    groupSize?: string;
+    @Type(() => Number)
+    @IsNumber()
+    @Min(1)
+    minGroupSize?: number;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    @Min(1)
+    maxGroupSize?: number;
 
     @IsOptional()
     @IsEnum(PackageCategory)

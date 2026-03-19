@@ -65,9 +65,10 @@ export class CreatePackageWithItineraryDto {
   @IsString()
   destinationName: string;
 
+  @IsOptional()
   @ValidateNested()
   @Type(() => ImageItemDto)
-  coverImage: ImageItemDto;
+  coverImage?: ImageItemDto | null;
 
   @IsNumber()
   @Min(0)
@@ -94,8 +95,13 @@ export class CreatePackageWithItineraryDto {
   @IsEnum(DestinationType, { each: true })
   type: DestinationType[];
 
-  @IsString()
-  groupSize: string
+  @IsNumber()
+  @Min(1)
+  minGroupSize: number;
+
+  @IsNumber()
+  @Min(1)
+  maxGroupSize: number;
 
   @IsBoolean()
   isActive: boolean;

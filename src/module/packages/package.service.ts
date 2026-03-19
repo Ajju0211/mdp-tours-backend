@@ -185,6 +185,16 @@ export class PackageService {
   }
 
 
+  async getActiveAndPublishedPackages() {
+    const data = await this.packageModel
+      .find({ isActive: true, isPublic: true })
+      .sort({ createdAt: -1 })
+      .limit(8)
+      .lean();
+
+    return { data, total: data.length };
+  }
+
   async getFilteredPackages(filterDto: GetPackagesFilterDto) {
     const {
       q,
@@ -192,7 +202,8 @@ export class PackageService {
       maxPrice,
       category,
       type,
-      groupSize,
+      minGroupSize,
+      maxGroupSize,
       limit = 10,
       cursor
     } = filterDto;
@@ -231,7 +242,8 @@ export class PackageService {
     // category is an array field in schema, use $in to match
     if (category) match.category = { $in: [category] };
     if (type) match.type = { $in: [type] };
-    if (groupSize) match.groupSize = groupSize;
+    if (minGroupSize) match.maxGroupSize = { $gte: Number(minGroupSize) };
+    if (maxGroupSize) match.minGroupSize = { $lte: Number(maxGroupSize) };
 
     pipeline.push({ $match: match });
 

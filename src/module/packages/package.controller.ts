@@ -9,7 +9,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PackageService } from './package.service';
-import { CreatePackageDto } from './dto/create-package.dto';
 import { CreatePackageWithItineraryDto } from './dto/create-package-with-itinerary.dto';
 import { GetPackagesFilterDto } from './dto/get-packages-filter.dto';
 
@@ -55,6 +54,11 @@ export class PackageController {
       isActive: isActive !== undefined ? isActive === 'true' : undefined,
       isPublic: isPublic !== undefined ? isPublic === 'true' : undefined,
     });
+  }
+
+  @Get('active-published')
+  async getActiveAndPublishedPackages() {
+    return this.packageService.getActiveAndPublishedPackages();
   }
 
   @Get()

@@ -35,7 +35,10 @@ export class Package {
   slug: string;
 
   @Prop({ index: true })
-  groupSize: string;
+  minGroupSize: number;
+
+  @Prop({ index: true })
+  maxGroupSize: number;
 
   @Prop({ default: true })
   isActive: boolean;
