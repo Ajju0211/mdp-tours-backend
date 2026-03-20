@@ -24,15 +24,17 @@ export class QueryService {
   }
 
   // 2️⃣ Get All Queries (Admin)
-  async findAll(page = 1, limit = 10, status?: string) {
+  async findAll(page = 1, limit = 10, status?: string, packageId?: string) {
     const skip = (page - 1) * limit;
 
     const filter: any = {};
     if (status) filter.status = status;
+    if (packageId) filter.packageId = packageId;
 
     const [queries, total] = await Promise.all([
       this.queryModel
         .find(filter)
+        .populate('packageId', 'title slug')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),

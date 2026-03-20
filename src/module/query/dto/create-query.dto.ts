@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength, IsMongoId } from 'class-validator';
 
 export class CreateQueryDto {
   @IsNotEmpty()
@@ -12,12 +12,15 @@ export class CreateQueryDto {
   @IsString()
   phone: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  service: string;
+  service?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @MinLength(10)
-  message: string;
+  message?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  packageId?: string;
 }

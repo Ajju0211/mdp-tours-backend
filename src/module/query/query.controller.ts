@@ -28,11 +28,13 @@ export class QueryController {
     @QueryParam('page') page: number,
     @QueryParam('limit') limit: number,
     @QueryParam('status') status?: string,
+    @QueryParam('packageId') packageId?: string,
   ) {
     return this.queryService.findAll(
       Number(page) || 1,
       Number(limit) || 10,
       status,
+      packageId,
     );
   }
 

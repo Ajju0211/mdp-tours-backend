@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsOptional } from 'class-validator';
 import { Document, Types } from 'mongoose';
 import { QueryStatus } from 'src/enum/query.enum';
 
@@ -19,20 +20,24 @@ export class Query {
   @Prop({ required: true })
   phone: string;
 
-  @Prop({ required: true })
-  service: string; // ex: "GST Registration", "ITR Filing"
+  @Prop({ required: false })
+  service?: string; // ex: "GST Registration", "ITR Filing"
 
-  @Prop({ required: true })
-  message: string;
+  @Prop({ required: false })
+  message?: string;
+
+  @IsOptional()
+  @Prop({ type: Types.ObjectId, ref: 'Package' })
+  packageId?: Types.ObjectId;
 
   // ---------------------------
   // 📊 Business / Admin Meta
   // ---------------------------
 
-  @Prop({ 
-    type: String, 
-    enum: QueryStatus, 
-    default: QueryStatus.NEW 
+  @Prop({
+    type: String,
+    enum: QueryStatus,
+    default: QueryStatus.NEW
   })
   status: QueryStatus;
 
