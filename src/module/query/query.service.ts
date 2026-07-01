@@ -85,11 +85,24 @@ export class QueryService {
   }
 
   // query.service.ts
-async getNewQueryCount() {
-  const count = await this.queryModel.countDocuments({
-    status: 'NEW',
-  });
+  async getNewQueryCount() {
+    const count = await this.queryModel.countDocuments({
+      status: 'NEW',
+    });
 
-  return { count };
-}
+    return { count };
+  }
+
+  // 5️⃣ Delete Query
+  async remove(id: string) {
+    const query = await this.queryModel.findByIdAndDelete(id);
+
+    if (!query) throw new NotFoundException('Query not found');
+
+    return {
+      success: true,
+      message: 'Query deleted successfully',
+      data: query,
+    };
+  }
 }

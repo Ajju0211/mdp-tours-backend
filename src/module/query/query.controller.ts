@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -57,8 +58,14 @@ export class QueryController {
   }
 
   // query.controller.ts
-@Get('count/new')
-async getNewCount() {
-  return this.queryService.getNewQueryCount();
-}
+  @Get('count/new')
+  async getNewCount() {
+    return this.queryService.getNewQueryCount();
+  }
+
+  // DELETE QUERY
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.queryService.remove(id);
+  }
 }
