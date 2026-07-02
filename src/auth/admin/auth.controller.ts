@@ -1,15 +1,14 @@
 import { Controller, Post, Body, Res, Get, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { User } from 'src/common/decorator/user.decorator';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
 
-    @Post('sign-in')
-      async login(
+  @Post('sign-in')
+  async login(
     @Body() body: { email: string; password: string },
     @Res({ passthrough: true }) res: any, // allow us to set cookies
   ) {
@@ -26,13 +25,13 @@ export class AuthController {
     return { user }; // token is in cookie, frontend doesn't need it in response
   }
 
-    @Post('sign-up')
-    signup(@Body() body: { email: string; password: string }) {
-        return this.authService.signup(body.email, body.password);
-    }
-    
+  @Post('sign-up')
+  signup(@Body() body: { email: string; password: string }) {
+    return this.authService.signup(body.email, body.password);
+  }
 
-     @UseGuards(JwtAuthGuard)
+
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@User() user: any) {
     const profile = {
@@ -40,5 +39,15 @@ export class AuthController {
       role: user.role
     }
     return { user: profile }; // user comes from JWT payload
+  }
+
+  @Post('sign-out')
+  logout(@Res({ passthrough: true }) res: any) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: false, // Match with sign-in cookie security settings (false for dev, true for prod with https)
+      sameSite: 'lax',
+    });
+    return { success: true, message: 'Logged out successfully' };
   }
 }
