@@ -11,6 +11,11 @@ interface ItineraryItem {
   activities: string[];
 }
 
+/**
+ * Mongoose schema representing a primary tour package.
+ * Contains high-level metadata such as pricing, categories, and cover images.
+ * Designed to be highly searchable and lightweight for listing pages.
+ */
 @Schema({ timestamps: true })
 export class Package {
   @Prop({ required: true })

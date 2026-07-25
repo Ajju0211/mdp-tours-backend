@@ -3,6 +3,10 @@ import { Document } from 'mongoose';
 
 export type AdminDocument = Admin & Document;
 
+/**
+ * Mongoose schema representing an administrative user.
+ * Stores securely hashed credentials and Role-Based Access Control (RBAC) roles.
+ */
 @Schema({ timestamps: true })
 export class Admin {
   @Prop({ required: true, unique: true })

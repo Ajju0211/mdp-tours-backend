@@ -5,11 +5,15 @@ import { QueryStatus } from 'src/enum/query.enum';
 
 export type QueryDocument = Query & Document;
 
+/**
+ * Mongoose schema representing a user inquiry or booking lead.
+ * Stores customer contact details and administrative lifecycle status.
+ */
 @Schema({ timestamps: true })
 export class Query {
-  // ---------------------------
-  // 👤 User Information
-  // ---------------------------
+  /**
+   * User Information Section
+   */
 
   @Prop({ required: true, trim: true })
   fullName: string;
@@ -30,9 +34,9 @@ export class Query {
   @Prop({ type: Types.ObjectId, ref: 'Package' })
   packageId?: Types.ObjectId;
 
-  // ---------------------------
-  // 📊 Business / Admin Meta
-  // ---------------------------
+  /**
+   * Business & Admin Metadata Section
+   */
 
   @Prop({
     type: String,

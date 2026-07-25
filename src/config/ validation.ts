@@ -15,4 +15,5 @@ export const validationSchema = Joi.object({
   R2_ACCESS_KEY_ID: Joi.string().required(),
   R2_SECRET_ACCESS_KEY: Joi.string().required(),
   R2_PUBLIC_URL: Joi.string().required(),
+  FRONTEND_URL: Joi.string().optional(),
 });

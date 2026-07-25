@@ -53,6 +53,11 @@ class DayPlan {
   notes: string;
 }
 
+/**
+ * Mongoose schema representing the detailed day-by-day itinerary of a package.
+ * Separated from the Package schema to prevent document bloat and optimize read performance.
+ * Maintains a strict 1-to-1 relationship with a Package document.
+ */
 @Schema({ timestamps: true })
 export class Itinerary {
   @Prop({

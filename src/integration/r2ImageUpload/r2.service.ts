@@ -1,14 +1,13 @@
-import {
-  Injectable,
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { BaseException } from '../../common/exceptions/base.exception';
+import { ERROR_CODES } from '../../common/exceptions/error-codes.enum';
+import { FileTooLargeException, InvalidFileTypeException, StorageOperationFailedException, UploadFailedException } from './exceptions/upload.exception';
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import { v4 as uuidv4 } from 'uuid';
+import { IdUtil } from '../../common/utils/id.util';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -31,9 +30,12 @@ export class UploadService {
     this.publicUrl = this.configService.get('r2.publicUrl') || '';
   }
 
-  // ===============================
-  // Upload Image(s) - AVIF only
-  // ===============================
+  /**
+   * Uploads one or multiple images to Cloudflare R2 / AWS S3.
+   * 
+   * @param fileOrFiles - Single or array of Multer file objects
+   * @returns Metadata of the uploaded image(s) including URL and Key
+   */
   async uploadImages(fileOrFiles: Express.Multer.File | Express.Multer.File[]) {
     const files = Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
@@ -41,7 +43,7 @@ export class UploadService {
       files.map(async (file) => {
         this.validateImage(file);
 
-        const key = `images/${uuidv4()}.avif`;
+        const key = `images/${IdUtil.generateUuid()}.avif`;
 
         await this.s3.send(
           new PutObjectCommand({
@@ -65,12 +67,16 @@ export class UploadService {
     return Array.isArray(fileOrFiles) ? results : results[0];
   }
 
-  // ===============================
-  // Delete Image
-  // ===============================
+  /**
+   * Permanently deletes an image from the storage bucket.
+   * 
+   * @param key - The unique object key of the image
+   * @throws StorageOperationFailedException or InvalidFileTypeException if key is invalid or deletion fails
+   * @returns Success confirmation message
+   */
   async deleteImage(key: string) {
     if (!key || !key.startsWith('images/')) {
-      throw new BadRequestException('Invalid image key');
+      throw new InvalidFileTypeException('Invalid image key');
     }
 
     try {
@@ -86,25 +92,28 @@ export class UploadService {
         key,
       };
     } catch {
-      throw new InternalServerErrorException('Deletion failed');
+      throw new StorageOperationFailedException('Deletion failed');
     }
   }
 
-  // ===============================
-  // Strict Validation
-  // ===============================
+  /**
+   * Validates an uploaded image for correct mimetype and size constraints.
+   * 
+   * @param file - The Multer file object to validate
+   * @throws InvalidFileTypeException or FileTooLargeException if file is missing, not AVIF, or exceeds size limits
+   */
   private validateImage(file: Express.Multer.File) {
     if (!file) {
-      throw new BadRequestException('File is required');
+      throw new InvalidFileTypeException('File is required');
     }
 
     if (file.mimetype !== 'image/avif') {
-      throw new BadRequestException('Only AVIF images are allowed');
+      throw new InvalidFileTypeException('Only AVIF images are allowed');
     }
 
     const maxSize = 5 * 1024 * 1024; // 5MB limit for admin
     if (file.size > maxSize) {
-      throw new BadRequestException('Image exceeds 5MB limit');
+      throw new FileTooLargeException('Image exceeds 5MB limit');
     }
   }
 }
